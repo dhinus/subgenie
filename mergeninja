@@ -1,0 +1,45 @@
+#!/bin/bash
+
+MAGIC="|sed '/^-*$/d' |sed 's/..:.*lines*//' | tr \"\n\" ' ' |sed 's/^\(.\{100\}\).*/\1/' "
+
+echo
+echo '\m/ MERGE NINJA \m/'
+echo '==================='
+echo
+
+if [ ! -d '.svn' ]; then
+  echo -e "Nice try, but current dir is not a working copy.\n"
+  exit 1
+fi
+
+THIS_BRANCH=`svn info |grep URL |sed 's|^.*\(svn.*\)|\1|'` 
+THE_TRUNK=`echo $THIS_BRANCH |sed 's|^\(svn.*\)/branches/.*|\1/trunk|'`
+
+if [ $THIS_BRANCH == $THE_TRUNK ]; then
+  echo -e "Nice try, but you cannot merge the trunk with itself.\n"
+  exit 2
+fi
+
+echo 'Current branch is:'
+echo $THIS_BRANCH
+echo 'Guess trunk is at:'
+echo $THE_TRUNK
+echo
+
+ELIGIBLES=`svn mergeinfo --show-revs eligible $THE_TRUNK`
+
+if [ "$ELIGIBLES" == '' ]; then
+  echo -e "Relax, there's nothing to merge.\n"
+  exit 3
+fi
+
+echo 'Now listing eligible revs'
+echo
+
+for rev in $ELIGIBLES; do
+	CMD="svn log -$rev $THE_TRUNK $MAGIC"
+	# echo $CMD
+	eval $CMD
+done
+
+echo
