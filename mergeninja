@@ -20,6 +20,20 @@ mergeOne()
   safeExec "$commit_command"
 }
 
+mergeRange()
+{
+  echo -e "\nEnter the FIRST revision to merge:"
+  read rev1
+  echo -e "\nEnter the LAST revision to merge:"
+  read rev2
+  pristineCheck
+  let "rev1 -= 1" #SVN range syntax wants the previous rev
+  merge_command="svn merge -r$rev1:$rev2 $THE_TRUNK"
+  safeExec "$merge_command"
+  commit_command="svn commit -m 'Mergeninja merged range $rev1:$rev2 from trunk'"
+  safeExec "$commit_command"
+}
+
 mergeAll()
 {
   pristineCheck 
@@ -82,6 +96,8 @@ if [[ -n $(echo $THIS_BRANCH |grep -e '^.*\(svn.*\)/branches/.*/' ) ]]; then
   exit 3
 fi
 
+pristineCheck
+
 echo 'Current branch is:'
 echo $THIS_BRANCH
 echo 'Guess trunk is at:'
@@ -112,6 +128,7 @@ echo "Okay!"
 echo
 echo "A. Merge everything"
 echo "C. Merge a single commit"
+echo "R. Merge a range of commits"
 echo "Q. Let me think about it"
 
 while true; do
@@ -120,13 +137,15 @@ while true; do
   case "$key" in
     A)
       mergeAll
-      echo -e "\nThank you for choosing \"Magic Carpet\" for all your travel needs.\n"
-      exit 0
+      break
       ;;
     C)
       mergeOne
-      echo -e "\nThank you for choosing \"Magic Carpet\" for all your travel needs.\n"
-      exit 0
+      break
+      ;;
+    R)
+      mergeRange
+      break
       ;;
     Q)
       echo -e "\nSee you later, then.\n"
@@ -134,3 +153,7 @@ while true; do
       ;;
   esac
 done
+
+echo -e "\nThank you for choosing \"Magic Carpet\" for all your travel needs.\n"
+exit 0
+
