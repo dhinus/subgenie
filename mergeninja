@@ -76,6 +76,12 @@ if [ $THIS_BRANCH == $THE_TRUNK ]; then
   exit 2
 fi
 
+if [[ -n $(echo $THIS_BRANCH |grep -e '^.*\(svn.*\)/branches/.*/' ) ]]; then
+  echo "Nice try, but this tool won't allow you to merge a subdirectory."
+  echo -e "You must merge a whole branch, or nothing. Sorry, mate.\n"
+  exit 3
+fi
+
 echo 'Current branch is:'
 echo $THIS_BRANCH
 echo 'Guess trunk is at:'
