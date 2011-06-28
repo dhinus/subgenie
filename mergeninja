@@ -1,5 +1,61 @@
 #!/bin/bash
 
+safeExec()
+{
+  cmd="$1"
+  echo -e "\nCMD: $cmd"
+  echo "Press ENTER to execute this command or CTRL-C to quit"
+  read
+  eval $cmd
+}
+
+mergeOne()
+{
+  echo -e "\nEnter a revision number:"
+  read rev
+  pristineCheck 
+  merge_command="svn merge -c$rev $THE_TRUNK"
+  safeExec "$merge_command"
+  commit_command="svn commit -m 'Mergeninja merged revision $rev from trunk'"
+  safeExec "$commit_command"
+}
+
+mergeAll()
+{
+  pristineCheck 
+  merge_command="svn merge $THE_TRUNK"
+  safeExec "$merge_command"
+  commit_command="svn commit -m 'Mergeninja merged all revisions from trunk'"
+  safeExec "$commit_command"
+}
+
+pristineCheck()
+{
+  PRISTINE=$(svn status | grep [AMCDG])
+  if [[ -n $PRISTINE ]]; then
+    echo -e "\nOUCH! The working copy has local modifications!"
+    echo -e "What about a nice svn revert -R .? ;)"
+    echo
+    echo "Y. Yes, please. Trash 'em all!"
+    echo "N. No, thanks. I want to review them."
+    while true; do
+      read -s -n1 key
+      key=$(echo $key |tr a-z A-Z)
+      case "$key" in
+        Y)
+          echo -e "\nReverting the working copy to BASE.\n"
+          svn revert -R .
+          break
+          ;;
+        N)
+          echo -e "\nSee you later, then.\n"
+          exit 0
+          ;;
+      esac
+    done
+  fi
+}
+
 MAGIC="|sed '/^-*$/d' |sed 's/..:.*lines*//' | tr \"\n\" ' ' |sed 's/^\(.\{100\}\).*/\1/' "
 
 echo
@@ -12,8 +68,8 @@ if [ ! -d '.svn' ]; then
   exit 1
 fi
 
-THIS_BRANCH=`svn info |grep URL |sed 's|^.*\(svn.*\)|\1|'` 
-THE_TRUNK=`echo $THIS_BRANCH |sed 's|^\(svn.*\)/branches/.*|\1/trunk|'`
+THIS_BRANCH=$(svn info |grep URL |sed 's|^.*\(svn.*\)|\1|')
+THE_TRUNK=$(echo $THIS_BRANCH |sed 's|^\(svn.*\)/branches/.*|\1/trunk|')
 
 if [ $THIS_BRANCH == $THE_TRUNK ]; then
   echo -e "Nice try, but you cannot merge the trunk with itself.\n"
@@ -26,15 +82,14 @@ echo 'Guess trunk is at:'
 echo $THE_TRUNK
 echo
 
-ELIGIBLES=`svn mergeinfo --show-revs eligible $THE_TRUNK`
+ELIGIBLES=$(svn mergeinfo --show-revs eligible $THE_TRUNK)
 
 if [ "$ELIGIBLES" == '' ]; then
   echo -e "Relax, there's nothing to merge.\n"
-  exit 3
+  exit 0
 fi
 
-echo 'Now listing eligible revs'
-echo
+echo -e "Now listing eligible revs\n"
 
 for rev in $ELIGIBLES; do
 	CMD="svn log -$rev $THE_TRUNK $MAGIC"
@@ -43,3 +98,33 @@ for rev in $ELIGIBLES; do
 done
 
 echo
+if [[ $1 == "-l" ]]; then exit 0; fi
+
+echo "I can't help you unless you make a wish."
+echo 'You have to say, "Genie, I want you to save my life," got it?'
+echo "Okay!"
+echo
+echo "A. Merge everything"
+echo "C. Merge a single commit"
+echo "Q. Let me think about it"
+
+while true; do
+  read -s -n1 key
+  key=$(echo $key |tr a-z A-Z)
+  case "$key" in
+    A)
+      mergeAll
+      echo -e "\nThank you for choosing \"Magic Carpet\" for all your travel needs.\n"
+      exit 0
+      ;;
+    C)
+      mergeOne
+      echo -e "\nThank you for choosing \"Magic Carpet\" for all your travel needs.\n"
+      exit 0
+      ;;
+    Q)
+      echo -e "\nSee you later, then.\n"
+      exit 0
+      ;;
+  esac
+done
