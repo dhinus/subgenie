@@ -75,7 +75,6 @@ MAGIC="|sed '/^-*$/d' |sed 's/..:.*lines*//' | tr \"\n\" ' ' |sed 's/^\(.\{100\}
 echo
 echo '\m/ MERGE NINJA \m/'
 echo '==================='
-echo
 
 if [ ! -d '.svn' ]; then
   echo -e "Nice try, but current dir is not a working copy.\n"
@@ -98,7 +97,7 @@ fi
 
 pristineCheck
 
-echo 'Current branch is:'
+echo -e '\nCurrent branch is:'
 echo $THIS_BRANCH
 echo 'Guess trunk is at:'
 echo $THE_TRUNK
@@ -115,7 +114,6 @@ echo -e "Now listing eligible revs\n"
 
 for rev in $ELIGIBLES; do
 	CMD="svn log -$rev $THE_TRUNK $MAGIC"
-	# echo $CMD
 	eval $CMD
 done
 
