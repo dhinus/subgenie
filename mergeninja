@@ -113,8 +113,8 @@ fi
 echo -e "Now listing eligible revs\n"
 
 for rev in $ELIGIBLES; do
-	CMD="svn log -$rev $THE_TRUNK $MAGIC"
-	eval $CMD
+  CMD="svn log -$rev $THE_TRUNK $MAGIC"
+  eval $CMD
 done
 
 echo
