@@ -97,6 +97,8 @@ fi
 
 pristineCheck
 
+echo -e "\nLet's make sure the working copy is up-to-date..."
+svn up
 echo -e '\nCurrent branch is:'
 echo $THIS_BRANCH
 echo 'Guess trunk is at:'
