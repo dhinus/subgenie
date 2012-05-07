@@ -16,7 +16,7 @@ mergeOne()
   pristineCheck
   merge_command="svn merge -c$rev $THE_TRUNK"
   safeExec "$merge_command"
-  commit_command="svn commit -m 'Mergeninja merged revision $rev from trunk'"
+  commit_command="svn commit -m 'Subgenie merged revision $rev from trunk'"
   safeExec "$commit_command"
 }
 
@@ -30,7 +30,7 @@ mergeRange()
   let "rev1 -= 1" #SVN range syntax wants the previous rev
   merge_command="svn merge -r$rev1:$rev2 $THE_TRUNK"
   safeExec "$merge_command"
-  commit_command="svn commit -m 'Mergeninja merged range $rev1:$rev2 from trunk'"
+  commit_command="svn commit -m 'Subgenie merged range $rev1:$rev2 from trunk'"
   safeExec "$commit_command"
 }
 
@@ -39,7 +39,7 @@ mergeAll()
   pristineCheck
   merge_command="svn merge $THE_TRUNK"
   safeExec "$merge_command"
-  commit_command="svn commit -m 'Mergeninja merged all revisions from trunk'"
+  commit_command="svn commit -m 'Subgenie merged all revisions from trunk'"
   safeExec "$commit_command"
 }
 
@@ -73,8 +73,8 @@ pristineCheck()
 MAGIC="|sed '/^-*$/d' |sed 's/..:.*lines*//' | tr \"\n\" ' ' |sed 's/^\(.\{100\}\).*/\1/' "
 
 echo
-echo '\m/ MERGE NINJA \m/'
-echo '==================='
+echo 'Subgenie'
+echo '========'
 
 if [ ! -d '.svn' ]; then
   echo -e "Nice try, but current dir is not a working copy.\n"
