@@ -1,3 +1,27 @@
 h2. Installation
 
-Run @sh install.sh@ 
+Run @sh install.sh@
+
+This will just copy the sgn executable to your /usr/local/bin directory.
+
+h2. Usage
+
+This utility covers a single usage pattern, but aims to do it well.
+
+The pattern is:
+* You have a svn repo with a trunk and one or more branches
+* All new work is committed first to the trunk
+* It is regularly merged to the branches (example: production branch)
+
+This utility hopefully makes this much less frustrating allowing you to:
+* Commit to trunk
+* Check that all is good and/or wait for production clearance
+* svn switch to the production branch
+* sgn (gently rub the lamp)
+* You will be presented with a list of unmerged commits, you can now choose to merge all of them or just some.
+* All will be duly recorded in the standard svn mergeinfo property
+
+h2. Requirements
+
+This has been tested with subversione 1.6 and 1.7. This should theoretically work with 1.5 as well.
+
