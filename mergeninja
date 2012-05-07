@@ -13,7 +13,7 @@ mergeOne()
 {
   echo -e "\nEnter a revision number:"
   read rev
-  pristineCheck 
+  pristineCheck
   merge_command="svn merge -c$rev $THE_TRUNK"
   safeExec "$merge_command"
   commit_command="svn commit -m 'Mergeninja merged revision $rev from trunk'"
@@ -36,7 +36,7 @@ mergeRange()
 
 mergeAll()
 {
-  pristineCheck 
+  pristineCheck
   merge_command="svn merge $THE_TRUNK"
   safeExec "$merge_command"
   commit_command="svn commit -m 'Mergeninja merged all revisions from trunk'"
@@ -110,6 +110,12 @@ ELIGIBLES=$(svn mergeinfo --show-revs eligible $THE_TRUNK)
 if [ "$ELIGIBLES" == '' ]; then
   echo -e "Relax, there's nothing to merge.\n"
   exit 0
+fi
+
+if [[ -n $(echo $ELIGIBLES |grep \*) ]]; then
+  echo "Ouch! There are partially-merged revisions."
+  echo "Probably you merged only some files/dirs, which is not generally a good idea."
+  echo "I'm not telling anyone, but please tidy up your working copy manually."
 fi
 
 echo -e "Now listing eligible revs\n"
