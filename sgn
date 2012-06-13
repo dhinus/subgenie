@@ -115,7 +115,8 @@ fi
 if [[ -n $(echo $ELIGIBLES |grep \*) ]]; then
   echo "Ouch! There are partially-merged revisions."
   echo "Probably you merged only some files/dirs, which is not generally a good idea."
-  echo "I'm not telling anyone, but please tidy up your working copy manually."
+  echo -e "I'm not telling anyone, but please tidy up your working copy manually.\n"
+  exit 4
 fi
 
 echo -e "Now listing eligible revs\n"
