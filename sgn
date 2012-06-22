@@ -45,7 +45,7 @@ mergeAll()
 
 pristineCheck()
 {
-  PRISTINE=$(svn status | grep ^[AMCDG])
+  PRISTINE=$(svn status | grep ^[!AMCDG])
   if [[ -n $PRISTINE ]]; then
     echo -e "\nOUCH! The working copy has local modifications!"
     echo -e "What about a nice svn revert -R .? ;)"
