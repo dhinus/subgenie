@@ -81,15 +81,15 @@ if [ ! -d '.svn' ]; then
   exit 1
 fi
 
-THIS_BRANCH=$(svn info |grep URL |sed 's|^.*\(svn.*\)|\1|')
-THE_TRUNK=$(echo $THIS_BRANCH |sed 's|^\(svn.*\)/branches/.*|\1/trunk|')
+THIS_BRANCH=$(svn info |grep '^URL' |sed 's|^URL: \([a-z]*://.*\)|\1|')
+THE_TRUNK=$(echo $THIS_BRANCH |sed 's|^\(.*\)/branches/.*|\1/trunk|')
 
 if [ $THIS_BRANCH == $THE_TRUNK ]; then
   echo -e "Nice try, but you cannot merge the trunk with itself.\n"
   exit 2
 fi
 
-if [[ -n $(echo $THIS_BRANCH |grep -e '^.*\(svn.*\)/branches/.*/' ) ]]; then
+if [[ -n $(echo $THIS_BRANCH |grep -e '^.*/branches/.*/' ) ]]; then
   echo "Nice try, but this tool won't allow you to merge a subdirectory."
   echo -e "You must merge a whole branch, or nothing. Sorry, mate.\n"
   exit 3
